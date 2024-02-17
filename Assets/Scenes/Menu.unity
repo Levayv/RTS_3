@@ -471,6 +471,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64bdf685b3082754b9c67680900a3da2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerMaterials:
+  - {fileID: 2100000, guid: ff9fc82a1ef73cd4089793bc0ce09917, type: 2}
+  - {fileID: 2100000, guid: 9e1004b313deddb43905dc6906dcd59e, type: 2}
+  - {fileID: 2100000, guid: 906523a3ddbd264438f2dd5b01694bcc, type: 2}
+  - {fileID: 2100000, guid: 29b27f0bef2b75742a25d1e283ab9e78, type: 2}
   _playerPrefab:
     RawGuidValue: 39c324796625db1478c6c48226d24441
 --- !u!4 &1172786407

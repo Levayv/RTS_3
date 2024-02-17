@@ -8,7 +8,7 @@ using Fusion.Sockets;
 
 public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
 {
-    public Material[] playerMaterials;
+    public Material[] playerMaterials; // TODO change to colors
     [SerializeField] private NetworkPrefabRef _playerPrefab;
     private Dictionary<PlayerRef, NetworkObject> _spawnedCharacters = new Dictionary<PlayerRef, NetworkObject>();
 
@@ -19,11 +19,24 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
         {
             // Create a unique position for the player
             Vector3 spawnPosition = new Vector3((player.RawEncoded % runner.Config.Simulation.PlayerCount) * 3, 1, 0);
-            Debug.Log($"spawnPosition={spawnPosition}");
             NetworkObject networkPlayerObject = runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, player);
             // Keep track of the player avatars for easy access
             _spawnedCharacters.Add(player, networkPlayerObject);
+            
+            AssignPlayerColor(networkPlayerObject);
         }
+    }
+
+    private void AssignPlayerColor(NetworkObject player)
+    {
+        if (_spawnedCharacters.Count > playerMaterials.Length)
+        {
+            Debug.LogError($"Spawned Players({_spawnedCharacters.Count}) > Player materials({_spawnedCharacters.Count})");
+        }
+
+        player.GetComponent<Player>().playerColor_r = (byte)Mathf.RoundToInt(playerMaterials[_spawnedCharacters.Count-1].color.r * 255f);
+        player.GetComponent<Player>().playerColor_g = (byte)Mathf.RoundToInt(playerMaterials[_spawnedCharacters.Count-1].color.g * 255f);
+        player.GetComponent<Player>().playerColor_b = (byte)Mathf.RoundToInt(playerMaterials[_spawnedCharacters.Count-1].color.b * 255f);
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player)
