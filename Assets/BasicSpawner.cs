@@ -19,7 +19,7 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
         if (runner.IsServer)
         {
             NetworkObject networkPlayerObject = runner.Spawn(_playerPrefab, Vector3.zero, Quaternion.identity, player);
-            networkPlayerObject.GetComponent<Player>().initialPosition = spawnTransform.position;
+            networkPlayerObject.GetComponent<Player>().SetInitialPosition(spawnTransform.position);
             
             // Keep track of the player avatars for easy access
             _spawnedCharacters.Add(player, networkPlayerObject);

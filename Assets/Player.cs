@@ -4,8 +4,7 @@ using UnityEngine.AI;
 
 public class Player : NetworkBehaviour
 {
-    public Vector3 initialPosition;
-    private NetworkTransform _nTransform;
+    [SerializeField] private NetworkTransform _nTransform;
     [Networked] public byte playerColor_r { get; set; }
     [Networked] public byte playerColor_g { get; set; }
     [Networked] public byte playerColor_b { get; set; }
@@ -13,7 +12,6 @@ public class Player : NetworkBehaviour
 
     public void Awake()
     {
-        Debug.Log("awake ?");
         _nTransform = GetComponent<NetworkTransform>();
         _material = GetComponentInChildren<MeshRenderer>().material;
         _agent = GetComponentInChildren<NavMeshAgent>();
@@ -23,10 +21,13 @@ public class Player : NetworkBehaviour
 
     public override void Spawned()
     {
-        Debug.Log($"spawned at {initialPosition}");
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
-        _nTransform.Teleport(initialPosition, Quaternion.identity);
         UpdateColor();
+    }
+
+    public void SetInitialPosition(Vector3 position)
+    {
+        _nTransform.Teleport(position, Quaternion.identity);
     }
 
     public override void FixedUpdateNetwork()
