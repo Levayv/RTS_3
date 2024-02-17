@@ -1,14 +1,13 @@
-
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Fusion;
 using Fusion.Sockets;
-using UnityEngine.EventSystems;
 
 public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
 {
+    public Transform spawnTransform;
     public Camera mainCamera;
     public Material[] playerMaterials; // TODO change to colors
     [SerializeField] private NetworkPrefabRef _playerPrefab;
@@ -19,12 +18,12 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
     {
         if (runner.IsServer)
         {
-            // Create a unique position for the player
-            Vector3 spawnPosition = new Vector3((player.RawEncoded % runner.Config.Simulation.PlayerCount) * 3, 1, 0);
-            NetworkObject networkPlayerObject = runner.Spawn(_playerPrefab, spawnPosition, Quaternion.identity, player);
+            NetworkObject networkPlayerObject = runner.Spawn(_playerPrefab, Vector3.zero, Quaternion.identity, player);
+            networkPlayerObject.GetComponent<Player>().initialPosition = spawnTransform.position;
+            
             // Keep track of the player avatars for easy access
             _spawnedCharacters.Add(player, networkPlayerObject);
-            
+
             AssignPlayerColor(networkPlayerObject);
         }
     }
