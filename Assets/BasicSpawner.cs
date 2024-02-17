@@ -5,9 +5,11 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Fusion;
 using Fusion.Sockets;
+using UnityEngine.EventSystems;
 
 public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
 {
+    public Camera mainCamera;
     public Material[] playerMaterials; // TODO change to colors
     [SerializeField] private NetworkPrefabRef _playerPrefab;
     private Dictionary<PlayerRef, NetworkObject> _spawnedCharacters = new Dictionary<PlayerRef, NetworkObject>();
@@ -50,7 +52,14 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
+        
         var data = new NetworkInputData();
+        Vector3 point = FindMousePosition();
+        if (point != Vector3.zero)
+        {
+            Debug.Log($"point is {point}");
+            data.position = point;
+        }
 
         if (Input.GetKey(KeyCode.W))
             data.direction += Vector3.forward;
@@ -87,6 +96,9 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
 
     async void StartGame(GameMode mode)
     {
+        rayLayerMask = LayerMask.GetMask(new[] { "Ground"});
+        mainCamera = Camera.main;
+        
         // Create the Fusion runner and let it know that we will be providing user input
         _runner = gameObject.AddComponent<NetworkRunner>();
         _runner.ProvideInput = true;
@@ -123,5 +135,70 @@ public class BasicSpawner : MonoBehaviour, INetworkRunnerCallbacks
                 StartGame(GameMode.Client);
             }
         }
+    }
+
+    private Vector3 screenPos;
+    private Ray ray;
+    public float rayRange = 100f;
+    public int rayLayerMask;
+    private Vector3 FindMousePosition()
+    {
+        screenPos = Input.mousePosition;
+        ray = mainCamera.ScreenPointToRay(screenPos);
+
+        RaycastHit[] hits = Physics.RaycastAll(
+            ray,
+            rayRange,
+            rayLayerMask
+        );
+        if (hits.Length > 0)
+        {
+            RaycastHit[] sortedHits;
+            if (hits.Length > 1)
+            {
+                sortedHits = hits;
+                // sortedHits = new RaycastHit[hits.Length];
+                // sortedHits = hits.OrderBy(item => (item.transform.position - transform.position).sqrMagnitude)
+                    // .ToArray();    
+            }
+            else
+            {
+                sortedHits = hits;
+            }
+            
+            foreach (RaycastHit hit in sortedHits)
+            {
+                string hitLayerName = LayerMask.LayerToName(hit.transform.gameObject.layer);
+
+                if (hitLayerName == "Ground")
+                {
+                    if (hitGround(hit))
+                    {
+                        return hit.point;
+                    }
+                }
+            }
+        }
+
+        return Vector3.zero;
+    }
+
+    private bool hitGround(RaycastHit hit)
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Debug.Log("click M1");
+            // if (!EventSystem.current.IsPointerOverGameObject())
+            // {
+                return true;
+            // }
+        }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            Debug.Log("click M2");
+            return true;
+        }
+        return false;
     }
 }

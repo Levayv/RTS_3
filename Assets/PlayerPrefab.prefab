@@ -150,6 +150,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c8d3d3a986d919479f5e765ad735b53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerColor_r: 0
+  _playerColor_g: 0
+  _playerColor_b: 0
+  targetPosition: {x: 0, y: 0, z: 0}
+  isAlive: 1
+  arrived: 0
+  isFollowing: 0
+  despawnInProgress: 0
+  unitCollisionSize: 2
+  rotateSpeed: 5
+  moveSpeed: 20
 --- !u!143 &6658629582995098470
 CharacterController:
   m_ObjectHideFlags: 0
